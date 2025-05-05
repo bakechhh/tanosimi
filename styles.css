@@ -18,9 +18,24 @@
 
 body {
     font-family: 'Mochiy Pop One', sans-serif;
-    background-color: var(--light-bg);
+    background-image: url('https://cdn.pixabay.com/photo/2016/10/18/21/22/disneyland-1751139_1280.jpg');
+    background-size: cover;
+    background-attachment: fixed;
+    background-position: center;
     color: var(--text-dark);
     line-height: 1.6;
+    position: relative;
+}
+
+body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.7);
+    z-index: -1;
 }
 
 .container {
@@ -33,14 +48,34 @@ header {
     text-align: center;
     margin-bottom: 40px;
     position: relative;
-    padding: 30px 0;
+    padding: 50px 0;
+    background-image: url('https://cdn.pixabay.com/photo/2021/07/30/04/17/castle-6508614_1280.jpg');
+    background-size: cover;
+    background-position: center;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+}
+
+header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.5));
+    z-index: 0;
 }
 
 header h1 {
-    color: var(--primary-color);
-    font-size: 2.5rem;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    color: white;
+    font-size: 3rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
     animation: float 3s ease-in-out infinite;
+    position: relative;
+    z-index: 1;
+    letter-spacing: 2px;
 }
 
 @keyframes float {
@@ -66,12 +101,101 @@ header h1 {
 }
 
 section {
-    background-color: white;
+    background-color: rgba(255, 255, 255, 0.85);
+    background-position: center;
+    background-size: cover;
     border-radius: 15px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
     padding: 25px;
     margin-bottom: 30px;
     transition: transform 0.3s;
+    position: relative;
+    overflow: hidden;
+}
+
+.countdown-section {
+    background-image: url('https://cdn.pixabay.com/photo/2019/05/20/18/03/castle-4217212_1280.jpg');
+    background-position: center bottom;
+    position: relative;
+}
+
+.countdown-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.8);
+    z-index: -1;
+}
+
+.attractions-section {
+    background-image: url('https://cdn.pixabay.com/photo/2016/10/02/20/19/roller-coaster-1710570_1280.jpg');
+    background-position: center;
+    position: relative;
+}
+
+.attractions-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.85);
+    z-index: -1;
+}
+
+.memories-section {
+    background-image: url('https://cdn.pixabay.com/photo/2018/11/16/08/33/travel-3819808_1280.jpg');
+    background-position: center;
+    position: relative;
+}
+
+.memories-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.85);
+    z-index: -1;
+}
+
+.surprise-section {
+    background-image: url('https://cdn.pixabay.com/photo/2015/05/01/07/48/fireworks-748685_1280.jpg');
+    background-position: center;
+    position: relative;
+}
+
+.surprise-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.85);
+    z-index: -1;
+}
+
+.disney-quotes {
+    background-image: url('https://cdn.pixabay.com/photo/2018/01/28/00/20/fantasy-3112865_1280.jpg');
+    background-position: center;
+    position: relative;
+}
+
+.disney-quotes::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.85);
+    z-index: -1;
 }
 
 section:hover {
@@ -79,18 +203,23 @@ section:hover {
 }
 
 h2 {
-    color: var(--secondary-color);
+    color: var(--primary-color);
     margin-bottom: 20px;
     position: relative;
     padding-bottom: 10px;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    font-size: 1.8rem;
+    text-align: center;
 }
 
 h2::after {
     content: '';
     position: absolute;
     bottom: 0;
-    left: 0;
-    width: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
     height: 3px;
     background-color: var(--accent-color);
 }
@@ -103,20 +232,30 @@ h2::after {
     display: flex;
     justify-content: center;
     gap: 20px;
-    margin: 20px 0;
+    margin: 30px 0;
+    position: relative;
+    z-index: 1;
 }
 
 .time-box {
-    background-color: var(--secondary-color);
+    background: linear-gradient(to bottom, var(--primary-color), #c2185b);
     color: var(--text-light);
-    border-radius: 10px;
-    width: 80px;
-    height: 80px;
+    border-radius: 15px;
+    width: 90px;
+    height: 90px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    position: relative;
+    overflow: hidden;
+    transform: translateY(0);
+    transition: transform 0.3s ease;
+}
+
+.time-box:hover {
+    transform: translateY(-5px);
 }
 
 .time-box span {
@@ -141,17 +280,28 @@ h2::after {
 }
 
 button {
-    background-color: var(--primary-color);
+    background: linear-gradient(45deg, var(--primary-color), #ff4081);
     color: white;
     border: none;
-    padding: 8px 15px;
-    border-radius: 5px;
+    padding: 10px 20px;
+    border-radius: 30px;
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: all 0.3s;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    font-weight: bold;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
 }
 
 button:hover {
-    background-color: #c2185b;
+    background: linear-gradient(45deg, #ff4081, var(--primary-color));
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    transform: translateY(-2px);
+}
+
+button:active {
+    transform: translateY(1px);
 }
 
 .add-attraction, .memory-upload, .add-surprise {
