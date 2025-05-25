@@ -30,38 +30,45 @@
             font-size: 2.5rem;
         }
         
-        .tabs {
-            display: flex;
+        .race-selector {
             background: white;
+            padding: 20px;
             border-radius: 10px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             margin-bottom: 20px;
-            overflow: hidden;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
         }
         
-        .tab {
-            flex: 1;
-            padding: 15px 20px;
-            background: #ecf0f1;
-            border: none;
-            cursor: pointer;
-            font-size: 1.1rem;
+        .race-selector label {
             font-weight: 600;
-            transition: all 0.3s ease;
-            border-right: 1px solid #bdc3c7;
+            color: #2c3e50;
+            font-size: 1.1rem;
         }
         
-        .tab:last-child {
-            border-right: none;
+        .race-selector select {
+            padding: 10px 15px;
+            border: 2px solid #ecf0f1;
+            border-radius: 8px;
+            font-size: 1rem;
+            min-width: 200px;
+            background: white;
         }
         
-        .tab.active {
+        .race-selector select:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+        
+        #raceCount {
             background: #3498db;
             color: white;
-        }
-        
-        .tab:hover:not(.active) {
-            background: #d5dbdb;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            font-weight: bold;
         }
         
         .race-content {
@@ -325,8 +332,12 @@
             </div>
         </div>
         
-        <div class="tabs" id="raceTabs">
-            <!-- タブは自動生成 -->
+        <div class="race-selector">
+            <label for="raceSelect">🏇 レース選択:</label>
+            <select id="raceSelect">
+                <option value="">レースを選択してください</option>
+            </select>
+            <span id="raceCount"></span>
         </div>
         
         <div class="race-content active" id="race-content">
@@ -383,10 +394,8 @@
             const loadingStatus = document.getElementById('loadingStatus');
             const loadedRaces = document.getElementById('loadedRaces');
             const racesList = document.getElementById('racesList');
-            const tabsContainer = document.getElementById('raceTabs');
-            
-            // デフォルトタブを削除
-            tabsContainer.innerHTML = '';
+            const raceSelect = document.getElementById('raceSelect');
+            const raceCount = document.getElementById('raceCount');
             
             let loadedCount = 0;
             const loadedRaceNames = [];
@@ -399,14 +408,20 @@
                         const raceName = file.replace('_enhanced.json', '');
                         
                         raceData[raceName] = data;
-                        addRaceTab(raceName);
                         loadedRaceNames.push(raceName);
                         loadedCount++;
+                        
+                        // ドロップダウンに追加
+                        const option = document.createElement('option');
+                        option.value = raceName;
+                        option.textContent = raceName;
+                        raceSelect.appendChild(option);
                         
                         // 最初のレースを表示
                         if (loadedCount === 1) {
                             currentRace = raceName;
-                            switchRace(raceName);
+                            raceSelect.value = raceName;
+                            renderCurrentView();
                         }
                     }
                 } catch (error) {
@@ -418,12 +433,14 @@
             // 読み込み結果を表示
             loadingStatus.style.display = 'none';
             loadedRaces.style.display = 'block';
+            raceCount.textContent = `${loadedCount}レース読み込み完了`;
             racesList.innerHTML = loadedRaceNames.map(name => 
                 `<span style="background:#e8f5e8; padding:3px 8px; margin:2px; border-radius:12px; font-size:0.8rem;">${name}</span>`
             ).join(' ');
             
             if (loadedCount === 0) {
                 racesList.innerHTML = '<span style="color:#e74c3c;">読み込めるレースデータがありません</span>';
+                raceCount.textContent = '0レース';
             }
         }
         
@@ -664,6 +681,13 @@
             document.getElementById('sortBy').addEventListener('change', renderCurrentView);
             document.getElementById('filterBy').addEventListener('change', renderCurrentView);
             document.getElementById('searchHorse').addEventListener('input', renderCurrentView);
+            document.getElementById('raceSelect').addEventListener('change', function() {
+                const selectedRace = this.value;
+                if (selectedRace && raceData[selectedRace]) {
+                    currentRace = selectedRace;
+                    renderCurrentView();
+                }
+            });
         }
         
         function renderCurrentView() {
@@ -674,31 +698,6 @@
             } else {
                 renderTable();
             }
-        }
-        
-        function addRaceTab(raceName) {
-            const tabsContainer = document.getElementById('raceTabs');
-            
-            const tabButton = document.createElement('button');
-            tabButton.className = 'tab';
-            tabButton.textContent = raceName;
-            tabButton.setAttribute('data-race', raceName);
-            tabButton.onclick = () => switchRace(raceName);
-            
-            tabsContainer.appendChild(tabButton);
-            
-            // 最初のタブをアクティブに
-            if (tabsContainer.children.length === 1) {
-                tabButton.classList.add('active');
-            }
-        }
-        
-        function switchRace(raceName) {
-            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-            document.querySelector(`[data-race="${raceName}"]`).classList.add('active');
-            
-            currentRace = raceName;
-            renderCurrentView();
         }
         
         // 初期化
