@@ -513,7 +513,7 @@
         function formatValue(value, key) {
             if (value === null || value === undefined) return '-';
             if (typeof value === 'number') {
-                if (key.includes('prob_')) return (value * 100).toFixed(1) + '%';
+                if (key && key.includes('prob_')) return (value * 100).toFixed(1) + '%';
                 if (key === 'PCI平均') {
                     const pciType = value < 45 ? '前半型' : value > 55 ? '後半型' : '持久型';
                     return `${value.toFixed(1)} (${pciType})`;
