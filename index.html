@@ -318,15 +318,18 @@
         </div>
         
         <div class="file-upload">
-            <input type="file" id="fileInput" accept=".json" multiple>
-            <p>複数のJSONファイルをアップロードしてレース比較が可能です</p>
+            <div id="loadingStatus">📡 GitHubからレースデータを読み込み中...</div>
+            <div id="loadedRaces" style="display:none;">
+                <p>✅ 読み込み完了したレース:</p>
+                <div id="racesList"></div>
+            </div>
         </div>
         
         <div class="tabs" id="raceTabs">
-            <button class="tab active" data-race="default">京都1R</button>
+            <!-- タブは自動生成 -->
         </div>
         
-        <div class="race-content active" id="race-default">
+        <div class="race-content active" id="race-content">
             <div class="view-toggle">
                 <button class="view-btn active" onclick="switchView('cards')">カード表示</button>
                 <button class="view-btn" onclick="switchView('table')">テーブル表示</button>
@@ -363,258 +366,66 @@
 
     <script>
         let raceData = {};
-        let currentRace = 'default';
+        let currentRace = null;
         let currentView = 'cards';
         
-        // デフォルトデータ
-        const defaultData = {
-            "horses": [
-                {
-                    "horse_number": 4,
-                    "name": "ユキノクラウン",
-                    "popularity": 1,
-                    "track_aptitude": 2,
-                    "score_original": 138.37,
-                    "score_z": 1.19,
-                    "pred_prob_won": 0.2,
-                    "pred_prob_in_top2": 0.2,
-                    "pred_prob_in_top3": 0.54,
-                    "final_mark": "◎",
-                    "上り3F平均": 39.3,
-                    "Ave-3F平均": 38.4,
-                    "PCI平均": 47.7,
-                    "-3F差平均": 0.2,
-                    "想定脚質": "先行",
-                    "track_bias_aptitude_score": 94.5,
-                    "investment_value_score": 100,
-                    "total_investment_index": 95.3,
-                    "investment_rating": 0.85,
-                    "investment_mark": "◎"
-                },
-                {
-                    "horse_number": 9,
-                    "name": "ミッキーコンドル",
-                    "popularity": 4,
-                    "track_aptitude": 2,
-                    "score_original": 123.89,
-                    "score_z": 0.49,
-                    "pred_prob_won": 0.09,
-                    "pred_prob_in_top2": 0.1,
-                    "pred_prob_in_top3": 0.32,
-                    "final_mark": "△",
-                    "上り3F平均": 36.93,
-                    "Ave-3F平均": 37.03,
-                    "PCI平均": 50.27,
-                    "-3F差平均": 0.5,
-                    "想定脚質": "先行",
-                    "track_bias_aptitude_score": 94.5,
-                    "investment_value_score": 55.5,
-                    "total_investment_index": 67.5,
-                    "investment_rating": 0.678,
-                    "investment_mark": "○"
-                },
-                {
-                    "horse_number": 5,
-                    "name": "ベラジオガルフ",
-                    "popularity": 3,
-                    "track_aptitude": 0,
-                    "score_original": 127.25,
-                    "score_z": 0.65,
-                    "pred_prob_won": 0.11,
-                    "pred_prob_in_top2": 0.12,
-                    "pred_prob_in_top3": 0.35,
-                    "final_mark": "○",
-                    "上り3F平均": 36.37,
-                    "Ave-3F平均": 37.36,
-                    "PCI平均": 52.73,
-                    "-3F差平均": 0.65,
-                    "想定脚質": "中団",
-                    "track_bias_aptitude_score": 36.8,
-                    "investment_value_score": 64.2,
-                    "total_investment_index": 55.6,
-                    "investment_rating": 0.66,
-                    "investment_mark": "△"
-                },
-                {
-                    "horse_number": 11,
-                    "name": "ハイクオリティ",
-                    "popularity": 2,
-                    "track_aptitude": 2,
-                    "score_original": 127.87,
-                    "score_z": 0.68,
-                    "pred_prob_won": 0.1,
-                    "pred_prob_in_top2": 0.12,
-                    "pred_prob_in_top3": 0.34,
-                    "final_mark": "△",
-                    "上り3F平均": 37.55,
-                    "Ave-3F平均": 38.08,
-                    "PCI平均": 51.55,
-                    "-3F差平均": 1.03,
-                    "想定脚質": "後方",
-                    "track_bias_aptitude_score": 12.0,
-                    "investment_value_score": 72.3,
-                    "total_investment_index": 53.1,
-                    "investment_rating": 0.487,
-                    "investment_mark": "△"
-                },
-                {
-                    "horse_number": 1,
-                    "name": "ミユンガー",
-                    "popularity": 9,
-                    "track_aptitude": 0,
-                    "score_original": 115.05,
-                    "score_z": 0.06,
-                    "pred_prob_won": 0.04,
-                    "pred_prob_in_top2": 0.06,
-                    "pred_prob_in_top3": 0.16,
-                    "final_mark": "×",
-                    "上り3F平均": 39.69,
-                    "Ave-3F平均": 37.02,
-                    "PCI平均": 43.43,
-                    "-3F差平均": 0.97,
-                    "想定脚質": "中団",
-                    "track_bias_aptitude_score": 36.8,
-                    "investment_value_score": 23.4,
-                    "total_investment_index": 30.2,
-                    "investment_rating": 0.204,
-                    "investment_mark": "☆"
-                },
-                {
-                    "horse_number": 6,
-                    "name": "ヒシカリナン",
-                    "popularity": 5,
-                    "track_aptitude": 1,
-                    "score_original": 116.96,
-                    "score_z": 0.15,
-                    "pred_prob_won": 0.05,
-                    "pred_prob_in_top2": 0.07,
-                    "pred_prob_in_top3": 0.19,
-                    "final_mark": "☆",
-                    "上り3F平均": 36.1,
-                    "Ave-3F平均": 37.57,
-                    "PCI平均": 54.14,
-                    "-3F差平均": 0.82,
-                    "想定脚質": "中団",
-                    "track_bias_aptitude_score": 42.3,
-                    "investment_value_score": 38.9,
-                    "total_investment_index": 41.3,
-                    "investment_rating": 0.193,
-                    "investment_mark": "☆"
-                },
-                {
-                    "horse_number": 7,
-                    "name": "カンタカナリート",
-                    "popularity": 7,
-                    "track_aptitude": 1,
-                    "score_original": 111.07,
-                    "score_z": -0.13,
-                    "pred_prob_won": 0.03,
-                    "pred_prob_in_top2": 0.06,
-                    "pred_prob_in_top3": 0.14,
-                    "final_mark": "×",
-                    "上り3F平均": 39.83,
-                    "Ave-3F平均": 37.83,
-                    "PCI平均": 44.97,
-                    "-3F差平均": 0.97,
-                    "想定脚質": "中団",
-                    "track_bias_aptitude_score": 42.3,
-                    "investment_value_score": 25.1,
-                    "total_investment_index": 32.5,
-                    "investment_rating": 0.012,
-                    "investment_mark": "×"
-                },
-                {
-                    "horse_number": 10,
-                    "name": "カーリンハート",
-                    "popularity": 8,
-                    "track_aptitude": 2,
-                    "score_original": 107.58,
-                    "score_z": -0.3,
-                    "pred_prob_won": 0.02,
-                    "pred_prob_in_top2": 0.03,
-                    "pred_prob_in_top3": 0.09,
-                    "final_mark": "消",
-                    "上り3F平均": 36.9,
-                    "Ave-3F平均": 37.01,
-                    "PCI平均": 50.3,
-                    "-3F差平均": 0.5,
-                    "想定脚質": "中団",
-                    "track_bias_aptitude_score": 47.8,
-                    "investment_value_score": 13.7,
-                    "total_investment_index": 27.1,
-                    "investment_rating": -0.278,
-                    "investment_mark": "××"
-                },
-                {
-                    "horse_number": 8,
-                    "name": "ダズラー",
-                    "popularity": 6,
-                    "track_aptitude": 0,
-                    "score_original": 62.62,
-                    "score_z": -2.48,
-                    "pred_prob_won": 0.01,
-                    "pred_prob_in_top2": 0.02,
-                    "pred_prob_in_top3": 0.05,
-                    "final_mark": "消",
-                    "上り3F平均": 0,
-                    "Ave-3F平均": 0,
-                    "PCI平均": 0,
-                    "-3F差平均": 0,
-                    "想定脚質": "不明",
-                    "track_bias_aptitude_score": null,
-                    "investment_value_score": 2.9,
-                    "total_investment_index": null,
-                    "investment_rating": -0.487,
-                    "investment_mark": "××"
-                },
-                {
-                    "horse_number": 3,
-                    "name": "アインホルン",
-                    "popularity": 10,
-                    "track_aptitude": 0,
-                    "score_original": 95.15,
-                    "score_z": -0.9,
-                    "pred_prob_won": 0.01,
-                    "pred_prob_in_top2": 0.03,
-                    "pred_prob_in_top3": 0.06,
-                    "final_mark": "消",
-                    "上り3F平均": 38.97,
-                    "Ave-3F平均": 37.07,
-                    "PCI平均": 45.47,
-                    "-3F差平均": 1.03,
-                    "想定脚質": "中団",
-                    "track_bias_aptitude_score": 36.8,
-                    "investment_value_score": 1,
-                    "total_investment_index": 15.1,
-                    "investment_rating": -0.503,
-                    "investment_mark": "××"
-                },
-                {
-                    "horse_number": 2,
-                    "name": "メイショウライズ",
-                    "popularity": 0,
-                    "track_aptitude": 1,
-                    "score_original": 126.58,
-                    "score_z": 0.62,
-                    "pred_prob_won": 0.1,
-                    "pred_prob_in_top2": 0.12,
-                    "pred_prob_in_top3": 0.35,
-                    "final_mark": "▲",
-                    "上り3F平均": 38.35,
-                    "Ave-3F平均": 37.83,
-                    "PCI平均": 48.77,
-                    "-3F差平均": 1.23,
-                    "想定脚質": "中団",
-                    "track_bias_aptitude_score": 42.3,
-                    "investment_value_score": null,
-                    "total_investment_index": null,
-                    "investment_rating": null,
-                    "investment_mark": "不明"
-                }
-            ]
-        };
+        // 自動読み込み対象のファイルリスト
+        const raceFiles = [];
+        const venues = ['京都', '新潟', '東京'];
+        venues.forEach(venue => {
+            for (let r = 1; r <= 12; r++) {
+                raceFiles.push(`${venue}${r}R_enhanced.json`);
+            }
+        });
         
-        raceData['default'] = defaultData;
+        // GitHubから自動読み込み
+        async function loadRaceData() {
+            const loadingStatus = document.getElementById('loadingStatus');
+            const loadedRaces = document.getElementById('loadedRaces');
+            const racesList = document.getElementById('racesList');
+            const tabsContainer = document.getElementById('raceTabs');
+            
+            // デフォルトタブを削除
+            tabsContainer.innerHTML = '';
+            
+            let loadedCount = 0;
+            const loadedRaceNames = [];
+            
+            for (const file of raceFiles) {
+                try {
+                    const response = await fetch(file);
+                    if (response.ok) {
+                        const data = await response.json();
+                        const raceName = file.replace('_enhanced.json', '');
+                        
+                        raceData[raceName] = data;
+                        addRaceTab(raceName);
+                        loadedRaceNames.push(raceName);
+                        loadedCount++;
+                        
+                        // 最初のレースを表示
+                        if (loadedCount === 1) {
+                            currentRace = raceName;
+                            switchRace(raceName);
+                        }
+                    }
+                } catch (error) {
+                    // ファイルが存在しない場合はスキップ
+                    console.log(`${file} をスキップ: ${error.message}`);
+                }
+            }
+            
+            // 読み込み結果を表示
+            loadingStatus.style.display = 'none';
+            loadedRaces.style.display = 'block';
+            racesList.innerHTML = loadedRaceNames.map(name => 
+                `<span style="background:#e8f5e8; padding:3px 8px; margin:2px; border-radius:12px; font-size:0.8rem;">${name}</span>`
+            ).join(' ');
+            
+            if (loadedCount === 0) {
+                racesList.innerHTML = '<span style="color:#e74c3c;">読み込めるレースデータがありません</span>';
+            }
+        }
         
         // 数値の高低判定設定
         const valueTypes = {
@@ -853,11 +664,11 @@
             document.getElementById('sortBy').addEventListener('change', renderCurrentView);
             document.getElementById('filterBy').addEventListener('change', renderCurrentView);
             document.getElementById('searchHorse').addEventListener('input', renderCurrentView);
-            
-            document.getElementById('fileInput').addEventListener('change', handleFileUpload);
         }
         
         function renderCurrentView() {
+            if (!currentRace || !raceData[currentRace]) return;
+            
             if (currentView === 'cards') {
                 renderCards();
             } else {
@@ -865,38 +676,20 @@
             }
         }
         
-        function handleFileUpload(event) {
-            const files = event.target.files;
-            
-            Array.from(files).forEach(file => {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    try {
-                        const data = JSON.parse(e.target.result);
-                        const raceName = file.name.replace('_enhanced.json', '').replace('.json', '');
-                        
-                        raceData[raceName] = data;
-                        addRaceTab(raceName);
-                    } catch (error) {
-                        alert('JSONファイルの読み込みエラー: ' + error.message);
-                    }
-                };
-                reader.readAsText(file);
-            });
-        }
-        
         function addRaceTab(raceName) {
             const tabsContainer = document.getElementById('raceTabs');
             
-            // タブが既に存在しない場合のみ追加
-            if (!document.querySelector(`[data-race="${raceName}"]`)) {
-                const tabButton = document.createElement('button');
-                tabButton.className = 'tab';
-                tabButton.textContent = raceName;
-                tabButton.setAttribute('data-race', raceName);
-                tabButton.onclick = () => switchRace(raceName);
-                
-                tabsContainer.appendChild(tabButton);
+            const tabButton = document.createElement('button');
+            tabButton.className = 'tab';
+            tabButton.textContent = raceName;
+            tabButton.setAttribute('data-race', raceName);
+            tabButton.onclick = () => switchRace(raceName);
+            
+            tabsContainer.appendChild(tabButton);
+            
+            // 最初のタブをアクティブに
+            if (tabsContainer.children.length === 1) {
+                tabButton.classList.add('active');
             }
         }
         
@@ -909,8 +702,10 @@
         }
         
         // 初期化
-        setupEventListeners();
-        renderCards();
+        window.addEventListener('DOMContentLoaded', async () => {
+            setupEventListeners();
+            await loadRaceData();
+        });
     </script>
 </body>
 </html>
