@@ -373,6 +373,38 @@
             <div id="cardView" class="horse-grid"></div>
             <div id="tableView" class="comparison-table" style="display: none;"></div>
         </div>
+            <div class="view-toggle">
+                <button class="view-btn active" onclick="switchView('cards')">カード表示</button>
+                <button class="view-btn" onclick="switchView('table')">テーブル表示</button>
+            </div>
+            
+            <div class="controls">
+                <div class="control-group">
+                    <label>ソート基準:</label>
+                    <select id="sortBy">
+                        <option value="horse_number">馬番</option>
+                        <option value="popularity">人気</option>
+                        <option value="score_original">スコア</option>
+                        <option value="pred_prob_won">勝率予測</option>
+                        <option value="investment_rating">投資評価</option>
+                    </select>
+                    
+                    <label>フィルター:</label>
+                    <select id="filterBy">
+                        <option value="all">全て</option>
+                        <option value="top3">上位3頭</option>
+                        <option value="mark_good">◎○印</option>
+                        <option value="investment_good">投資妙味あり</option>
+                    </select>
+                    
+                    <label>検索:</label>
+                    <input type="text" id="searchHorse" placeholder="馬名検索">
+                </div>
+            </div>
+            
+            <div id="cardView" class="horse-grid"></div>
+            <div id="tableView" class="comparison-table" style="display: none;"></div>
+        </div>
     </div>
 
     <script>
@@ -641,6 +673,11 @@
         }
         
         function getFilteredHorses() {
+            if (!currentRace || !raceData[currentRace] || !raceData[currentRace].horses) {
+                console.log('データがありません:', currentRace, raceData[currentRace]);
+                return [];
+            }
+            
             let horses = [...raceData[currentRace].horses];
             
             // ソート
@@ -674,6 +711,7 @@
                 horses = horses.filter(h => h.name.toLowerCase().includes(searchTerm));
             }
             
+            console.log('フィルター後の馬数:', horses.length);
             return horses;
         }
         
@@ -683,15 +721,23 @@
             document.getElementById('searchHorse').addEventListener('input', renderCurrentView);
             document.getElementById('raceSelect').addEventListener('change', function() {
                 const selectedRace = this.value;
+                console.log('レース選択:', selectedRace);
                 if (selectedRace && raceData[selectedRace]) {
                     currentRace = selectedRace;
+                    console.log('currentRace更新:', currentRace);
                     renderCurrentView();
+                } else {
+                    console.log('選択されたレースのデータがありません');
                 }
             });
         }
         
         function renderCurrentView() {
-            if (!currentRace || !raceData[currentRace]) return;
+            console.log('renderCurrentView実行:', currentRace);
+            if (!currentRace || !raceData[currentRace]) {
+                console.log('レースデータがありません');
+                return;
+            }
             
             if (currentView === 'cards') {
                 renderCards();
